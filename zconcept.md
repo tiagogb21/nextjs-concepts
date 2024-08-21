@@ -114,3 +114,61 @@ Next.js é um framework React utilizado para construir aplicações web com recu
 * Acessando Parâmetros:
 
     - Para acessar os parâmetros, você utiliza o objeto props.params, que contém o valor dinâmico passado na URL. No exemplo acima, seria props.params.id.
+
+
+## Request Cascate Fall (cascata de requisições):
+
+* um componente (filho) que está dentro de outro (pai), o filho depende do comportamento do componente pai
+
+    - O componente http faz a chamada renderiza o conteúdo e somente depois renderiza o componente filho
+
+* como o next resolveu esse problema:
+
+    - executa todas as chamadas http, a menos que uma dependa de outra, ao mesmo tempo
+
+* dica:
+
+    - quando dentro do mesmo componente, estivermos fazendo 2 await fetch() e um não depender do outro, tentar utilizar o Promise.all()
+
+    ```tsx
+        await fetch()
+        await fetch()
+    ```
+
+    ```tsx
+        const [resp1, resp2] = Promise.all([
+            fetch(''),
+            fetch(''),
+        ])
+    ```
+
+## Deduplicação automática:
+
+* evita duplicação de requisições HTTP
+
+    - Se fizermos 10 requisições para a mesma API, o next vai identificar e vai fazer uma única requisição e retornar o mesmo dado para todas elas
+
+## Acessando cookies e headers:
+
+    ```tsx
+        import { cookies, headers } from 'next/headers';
+
+        export async function Name() {
+            const nameCookies = cookies()
+            const nameCookies = headers()
+
+            return (
+                <pre>
+                    // Pega todos os cookies
+                    {JSON.stringify(userCookies.getAll(), null, 2)}
+                </pre>
+                <pre>
+                    // Pega um cookie em específico
+                    {JSON.stringify(userCookies.get('my_cookie'), null, 2)}
+                </pre>
+                <pre>
+                    {JSON.stringify(nameCookies.entries(), null, 2)}
+                </pre>
+            )
+        }
+    ```
