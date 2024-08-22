@@ -172,3 +172,133 @@ Next.js é um framework React utilizado para construir aplicações web com recu
             )
         }
     ```
+
+## Suspense API
+
+* Enquanto um pedaço estiver carregando, mostrar algo em seu lugar
+
+    ```tsx
+        import { Suspense } from 'react';
+
+        export async function Name() {
+            return (
+                <Suspense fallback={<p>Carregando...</p>}>
+                ...
+                </Suspense>
+            )
+        }
+    ```
+
+## Stream SSR
+
+* A interface é montada aos poucos
+
+## Navegação
+
+* next/router --> next/navigation (mais funcionalidades)
+
+    * useRouter() - possui alguns auxiliares:
+
+        - prefetch --> pré carregar dados
+        - push --> ir para uma página
+        - back --> retornar
+        - forward --> seguir em frente
+
+    * usePathname() - mostra a rota ativa no momento:
+
+    * useSearchParams() - permite pegar os parâmetros da url
+
+    * useSelectedLayoutSegments() - permite saber quais layouts foram renderizados
+
+    ```tsx
+        import { UseRouter } from 'next/navigation'
+
+        export async function Name() {
+            const { push } = useRouter();
+
+            return (
+                
+            )
+        }
+    ```
+
+## cache automático:
+
+* o next cria um cache automático na troca de rotas
+
+    - se um usuário em um determinada página, for para uma nova rota e depois retornar, não vai precisar recarregar todo o conteúdo (evita que as páginas sejam recarregadas do zero)
+
+    - problema (até o momento não corrigido): se os dados precisarem ser atualizados, não vai atualizar, por que está em cache
+
+    - solução: refresh do useRouter (atualiza a página - vai reprocessar)
+
+    ```tsx
+        import { UseRouter } from 'next/navigation'
+
+        export async function Name() {
+            const { refresh } = useRouter();
+
+            return (
+                
+            )
+        }
+    ```
+
+## Prefetching:
+
+* ocorre um prefetch assim que a viewport fica visível em tela
+
+https://www.youtube.com/watch?v=0zl72thBKzo
+
+59:59
+
+## Closures no React:
+
+```tsx
+    function Comment(props) {
+        const [likes, setLikes] = useState(0);
+
+        function addLike() {
+            setLikes(likes + 1)
+
+            console.log(likes) // 0 --> não alterou
+        }
+    }
+
+    // isso é muito parecido com
+    function comment() {
+        let like = 0;
+
+        return function () {
+            return like++;
+        }
+    }
+
+    // isso acontece por que está executando o mesmo contexto
+    console.log(comment()()); // 0
+    console.log(comment()()); // 0 --> não alterou
+
+    // para resolver esse problema no React:
+    function Comment(props) {
+        const [likes, setLikes] = useState(0);
+
+        function addLike() {
+            setLikes((state) => state + 1)
+
+            console.log(likes) // 1 --> alterou
+        }
+    }
+
+    // para resolver esse problema no js:
+    function comment() {
+        let like = 0;
+
+        return function () {
+            return like++;
+        }
+    }
+
+    let addLike = comment();
+    console.log(addLike())
+    console.log(addLike())
+```
